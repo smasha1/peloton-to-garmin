@@ -1,5 +1,5 @@
-﻿using Api.Contracts;
-using Common;
+﻿using Common;
+using Common.Dto.Api;
 using Common.Observe;
 using Common.Service;
 using Microsoft.AspNetCore.Mvc;
@@ -13,12 +13,10 @@ namespace Api.Controllers;
 public class SettingsController : Controller
 {
 	private readonly ISettingsService _settingsService;
-	private readonly AppConfiguration _appConfiguration;
 
-	public SettingsController(ISettingsService settingsService, AppConfiguration appConfiguration)
+	public SettingsController(ISettingsService settingsService)
 	{
 		_settingsService = settingsService;
-		_appConfiguration = appConfiguration;
 	}
 
 	/// <summary>
@@ -52,7 +50,7 @@ public class SettingsController : Controller
 
 		// TODO: Validation
 
-		await _settingsService.UpdateSettings(updatedSettings);
+		await _settingsService.UpdateSettingsAsync(updatedSettings);
 
 		var settings = await _settingsService.GetSettingsAsync();
 
@@ -78,7 +76,7 @@ public class SettingsController : Controller
 		var settings = await _settingsService.GetSettingsAsync();
 		settings.App = updatedAppSettings;
 
-		await _settingsService.UpdateSettings(settings);
+		await _settingsService.UpdateSettingsAsync(settings);
 		var updatedSettings = await _settingsService.GetSettingsAsync();
 
 		return updatedSettings.App;
@@ -99,7 +97,7 @@ public class SettingsController : Controller
 		var settings = await _settingsService.GetSettingsAsync();
 		settings.Format = updatedFormatSettings;
 
-		await _settingsService.UpdateSettings(settings);
+		await _settingsService.UpdateSettingsAsync(settings);
 		var updatedSettings = await _settingsService.GetSettingsAsync();
 
 		return updatedSettings.Format;
@@ -120,7 +118,7 @@ public class SettingsController : Controller
 		var settings = await _settingsService.GetSettingsAsync();
 		settings.Peloton = updatedPelotonSettings;
 
-		await _settingsService.UpdateSettings(settings);
+		await _settingsService.UpdateSettingsAsync(settings);
 		var updatedSettings = await _settingsService.GetSettingsAsync();
 
 		var settingsResponse = new SettingsGetResponse(updatedSettings);
@@ -144,7 +142,7 @@ public class SettingsController : Controller
 		var settings = await _settingsService.GetSettingsAsync();
 		settings.Garmin = updatedGarminSettings;
 
-		await _settingsService.UpdateSettings(settings);
+		await _settingsService.UpdateSettingsAsync(settings);
 		var updatedSettings = await _settingsService.GetSettingsAsync();
 
 		var settingsResponse = new SettingsGetResponse(updatedSettings);

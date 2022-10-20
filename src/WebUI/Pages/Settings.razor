@@ -1,4 +1,5 @@
 ﻿@page "/settings"
+@inherits TracingComponentBase
 @inject IApiClient _apiClient
 
 <PageTitle>Settings</PageTitle>
@@ -12,11 +13,13 @@
 			<EditForm Model="@appSettings">
 
 				<br />
-				<HxInputSwitch Label="Automatic Syncing" @bind-Value="appSettings.EnablePolling" />
+				<HxSwitch Label="Automatic Syncing" @bind-Value="appSettings.EnablePolling" />
 				<br />
 				<HxFormState Enabled="@appSettings.EnablePolling">
 					<HxInputNumber Label="Check for new workouts every X (seconds)" TValue="int" @bind-Value="appSettings.PollingIntervalSeconds" />
 				</HxFormState>
+				<br />
+				<HxSwitch Label="Check for new P2G Releases" @bind-Value="appSettings.CheckForUpdates" />
 				<br />
 				<HxAccordion CssClass="accordion-flush">
 					<HxAccordionItem>
@@ -38,9 +41,9 @@
 			<EditForm Model="@formatSettings">
 
 				<br />
-				<HxInputSwitch Label="Convert to FIT" @bind-Value="formatSettings.Fit" />
-				<HxInputSwitch Label="Convert to TCX" @bind-Value="formatSettings.Tcx" />
-				<HxInputSwitch Label="Convert to JSON" @bind-Value="formatSettings.Json" />
+				<HxSwitch Label="Convert to FIT" @bind-Value="formatSettings.Fit" />
+				<HxSwitch Label="Convert to TCX" @bind-Value="formatSettings.Tcx" />
+				<HxSwitch Label="Convert to JSON" @bind-Value="formatSettings.Json" />
 				<br />
 				<HxSelect
 					Label="Cycling Lap Type"
@@ -62,9 +65,9 @@
 						<HeaderTemplate>Advanced</HeaderTemplate>
 						<BodyTemplate>
 							<HxInputText Label="Path to custom deviceInfo.xml file" @bind-Value="formatSettings.DeviceInfoPath" /><br />
-							<HxInputSwitch Label="Include Time In HR Zones" @bind-Value="formatSettings.IncludeTimeInHRZones" />
-							<HxInputSwitch Label="Include Time in Power Zones" @bind-Value="formatSettings.IncludeTimeInPowerZones" />
-							<HxInputSwitch Label="Save a local copy of FIT and TCX files to output dir" @bind-Value="formatSettings.SaveLocalCopy" />
+							<HxSwitch Label="Include Time In HR Zones" @bind-Value="formatSettings.IncludeTimeInHRZones" />
+							<HxSwitch Label="Include Time in Power Zones" @bind-Value="formatSettings.IncludeTimeInPowerZones" />
+							<HxSwitch Label="Save a local copy of FIT and TCX files to output dir" @bind-Value="formatSettings.SaveLocalCopy" />
 						</BodyTemplate>
 					</HxAccordionItem>
 				</HxAccordion>
@@ -101,7 +104,7 @@
 		<Content>
 			<EditForm Model="@garminSettings">
 				<br />
-				<HxInputSwitch Label="Automatically upload to Garmin Connect" @bind-Value="garminSettings.Upload" />
+				<HxSwitch Label="Automatically upload to Garmin Connect" @bind-Value="garminSettings.Upload" />
 				<br />
 				<HxFormState Enabled="@garminSettings.Upload">
 					<HxInputText @bind-Value="garminSettings.Email" Label="Email" Type="InputType.Email" InputMode="InputMode.Email" />
@@ -156,45 +159,52 @@
 
 	private List<WorkoutType> selectedWorkoutTypes = new List<WorkoutType>();
 
-	public Settings() : base()
+	public Settings() : base(nameof(Settings))
 	{
 		var settings = new SettingsGetResponse();
 		appSettings = settings.App;
 		formatSettings = settings.Format;
 		pelotonSettings = settings.Peloton;
 		garminSettings = settings.Garmin;
+		configDocumentation = string.Empty;
 	}
 
 	protected override Task OnInitializedAsync()
 	{
+		using var tracing = Tracing.ClientTrace($"{nameof(Settings)}.{nameof(OnInitializedAsync)}", kind: ActivityKind.Client);
 		return LoadDataAsync();
 	}
 
 	protected async Task SaveAppSettings()
 	{
+		using var tracing = Tracing.ClientTrace($"{nameof(Settings)}.{nameof(SaveAppSettings)}", kind: ActivityKind.Client);
 		appSettings = await _apiClient.SettingsAppPostAsync(appSettings);
 	}
 
 	protected async Task SaveFormatSettings() 
 	{
+		using var tracing = Tracing.ClientTrace($"{nameof(Settings)}.{nameof(SaveFormatSettings)}", kind: ActivityKind.Client);
 		formatSettings = await _apiClient.SettingsFormatPostAsync(formatSettings);
 	}
 
 	protected async Task SavePelotonSettings() 
 	{
+		using var tracing = Tracing.ClientTrace($"{nameof(Settings)}.{nameof(SavePelotonSettings)}", kind: ActivityKind.Client);
 		pelotonSettings.ExcludeWorkoutTypes = selectedWorkoutTypes;
 		pelotonSettings = await _apiClient.SettingsPelotonPostAsync(pelotonSettings);
 	}
 
 	protected async Task SaveGarminSettings() 
 	{
+		using var tracing = Tracing.ClientTrace($"{nameof(Settings)}.{nameof(SaveGarminSettings)}", kind: ActivityKind.Client);
 		garminSettings = await _apiClient.SettingsGarminPostAsync(garminSettings);
 	}
 
 	private async Task LoadDataAsync()
 	{
+		using var tracing = Tracing.ClientTrace($"{nameof(Settings)}.{nameof(LoadDataAsync)}", kind: ActivityKind.Client);
 		var settingsTask = _apiClient.SettingsGetAsync();
-		var systemInfoTask = _apiClient.SystemInfoGetAsync();
+		var systemInfoTask = _apiClient.SystemInfoGetAsync(new SystemInfoGetRequest() { CheckForUpdate = false });
 
 		await Task.WhenAll(settingsTask, systemInfoTask);
 
