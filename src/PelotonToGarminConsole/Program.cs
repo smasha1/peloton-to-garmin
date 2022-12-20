@@ -15,8 +15,8 @@ using Serilog.Enrichers.Span;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Caching.Memory;
 using Common.Http;
-using GitHub;
 using Common.Stateful;
+using Philosowaffle.Capability.ReleaseChecks;
 
 Statics.AppType = Constants.ConsoleAppName;
 Statics.MetricPrefix = Constants.ConsoleAppName;
@@ -62,7 +62,9 @@ static IHostBuilder CreateHostBuilder(string[] args)
 			services.AddSingleton<ISettingsService>((serviceProvider) =>
 			{
 				var settingService = new SettingsService(serviceProvider.GetService<ISettingsDb>(), serviceProvider.GetService<IMemoryCache>(), serviceProvider.GetService<IConfiguration>(), serviceProvider.GetService<IFileHandling>());
-				return new FileBasedSettingsService(serviceProvider.GetService<IConfiguration>(), settingService);
+				var memCache = serviceProvider.GetService<IMemoryCache>();
+				var fileHandler = serviceProvider.GetService<IFileHandling>();
+				return new FileBasedSettingsService(serviceProvider.GetService<IConfiguration>(), settingService, memCache, fileHandler);
 			});
 
 			// PELOTON
@@ -73,9 +75,8 @@ static IHostBuilder CreateHostBuilder(string[] args)
 			services.AddSingleton<IGarminUploader, GarminUploader>();
 			services.AddSingleton<IGarminApiClient, Garmin.ApiClient>();
 
-			// GITHUB
-			services.AddSingleton<IGitHubApiClient, GitHub.ApiClient>();
-			services.AddSingleton<IGitHubService, GitHubService>();
+			// RELEASE CHECKS
+			services.AddGitHubReleaseChecker();
 
 			// SYNC
 			services.AddSingleton<ISyncStatusDb, SyncStatusDb>();

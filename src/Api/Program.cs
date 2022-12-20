@@ -7,9 +7,9 @@ using Common.Service;
 using Common.Stateful;
 using Conversion;
 using Garmin;
-using GitHub;
 using Microsoft.Extensions.Caching.Memory;
 using Peloton;
+using Philosowaffle.Capability.ReleaseChecks;
 using Prometheus;
 using Serilog;
 using Serilog.Enrichers.Span;
@@ -86,9 +86,8 @@ builder.Services.AddSingleton<IPelotonService, PelotonService>();
 builder.Services.AddSingleton<IGarminUploader, GarminUploader>();
 builder.Services.AddSingleton<IGarminApiClient, Garmin.ApiClient>();
 
-// GITHUB
-builder.Services.AddSingleton<IGitHubApiClient, GitHub.ApiClient>();
-builder.Services.AddSingleton<IGitHubService, GitHubService>();
+// RELEASE CHECKS
+builder.Services.AddGitHubReleaseChecker();
 
 // SYNC
 builder.Services.AddSingleton<ISyncStatusDb, SyncStatusDb>();
@@ -149,5 +148,30 @@ if (config.Observability.Prometheus.Enabled)
 //app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+
+///////////////////////////////////////////////////////////
+/// MIGRATIONS
+///////////////////////////////////////////////////////////
+
+// Migrate to Encrypted Credentials V1
+var settingsDb = app.Services.GetService<ISettingsDb>();
+var settings = await settingsDb!.GetSettingsAsync();
+
+if (settings.Peloton.EncryptionVersion != EncryptionVersion.V1
+	|| settings.Garmin.EncryptionVersion != EncryptionVersion.V1)
+{
+	try
+	{
+		await settingsDb.UpsertSettingsAsync(settings);
+		Log.Information("Successfully encrypted Peloton and Garmin credentials.");
+	} catch (Exception e)
+	{
+		Log.Error(e, "Failed to encrypt Peloton and Garmin credentials.");
+	}	
+}
+
+///////////////////////////////////////////////////////////
+/// START
+///////////////////////////////////////////////////////////
 
 await app.RunAsync();
