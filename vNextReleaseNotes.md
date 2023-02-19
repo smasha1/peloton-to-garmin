@@ -3,14 +3,18 @@
 
 ## Features
 
-- [#381] Rowing - now captures AvgStrokeDistance
-- [#374] Rowing - can now configure PreferredLapType for Row workouts
-- [#358] Begin publishing Docker Images on GitHub Packages
-- [#358] Introduce new Docker major version Release tag - allows you to pin to all updates to a major version i.e. `v3`
-- [#366] WebUI - Can now Clear your Peloton or Garmin Password via the UI
+- [#432] General Support for Garmin accounts protected by Two Step Verification
+	- WebUI - New setting added to enable 2FA
+	- Console (manual) - New setting added to enable 2FA
+	- Headless (automatic sync) - Does not support 2FA
+	- GitHub Action - Does not support 2FA
+- [#438] On startup log path to config file being used
 
-## Changes
+## Fixes
 
-- [#384] Bump dependency versions + Pull latest Garmin SDK (21.94)
-- [#366] WebUI - Credentials are now stored encrypted
-	- a one time migration step will happen on startup to encrypt your existing credentials
+- [#430] Fixed where error thrown for classes with `*` in the title 
+
+## Housekeeping
+
+- [#434] Dependency Bumps
+- [#435] More Dependency Bumps

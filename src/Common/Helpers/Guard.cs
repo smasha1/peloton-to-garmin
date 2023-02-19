@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Common.Helpers;
 
@@ -17,6 +15,19 @@ public static class Guard
 		if (input is null)
 		{
 			result = new BadRequestObjectResult(new ErrorResponse(errorMessage ?? $"{name} must not be null."));
+			return true;
+		}
+
+		return false;
+	}
+
+	public static bool CheckIsNullOrEmpty(this string input, string name, out ActionResult result, string errorMessage = null)
+	{
+		result = null;
+
+		if (string.IsNullOrEmpty(input))
+		{
+			result = new BadRequestObjectResult(new ErrorResponse(errorMessage ?? $"{name} must not be null or empty."));
 			return true;
 		}
 

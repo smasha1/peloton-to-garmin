@@ -13,13 +13,19 @@ public interface IApiClient
 	Task<SettingsGetResponse> SettingsGetAsync();
 	Task<Common.App> SettingsAppPostAsync(Common.App appSettings);
 	Task<Format> SettingsFormatPostAsync(Format formatSettings);
-	Task<SettingsPelotonGetResponse> SettingsPelotonPostAsync(Common.Peloton pelotonSettings);
-	Task<SettingsGarminGetResponse> SettingsGarminPostAsync(Common.Garmin garminSettings);
+	Task<SettingsPelotonGetResponse> SettingsPelotonPostAsync(SettingsPelotonPostRequest pelotonSettings);
+	Task<SettingsGarminGetResponse> SettingsGarminPostAsync(SettingsGarminPostRequest garminSettings);
 
 	Task<SyncGetResponse> SyncGetAsync();
 	Task<SyncPostResponse> SyncPostAsync(SyncPostRequest syncPostRequest);
 
 	Task<SystemInfoGetResponse> SystemInfoGetAsync(SystemInfoGetRequest systemInfoGetRequest);
+
+	Task<ProgressGetResponse> GetAnnualProgressAsync();
+
+	Task<GarminAuthenticationGetResponse> GetGarminAuthenticationAsync();
+	Task<IFlurlResponse> SignInToGarminAsync();
+	Task SendGarminMfaTokenAsync(GarminAuthenticationMfaTokenPostRequest request);
 }
 
 public class ApiClient : IApiClient
@@ -58,14 +64,14 @@ public class ApiClient : IApiClient
 				.ReceiveJson<Format>();
 	}
 	
-	public Task<SettingsPelotonGetResponse> SettingsPelotonPostAsync(Common.Peloton pelotonSettings)
+	public Task<SettingsPelotonGetResponse> SettingsPelotonPostAsync(SettingsPelotonPostRequest pelotonSettings)
 	{
 		return $"{_apiUrl}/api/settings/peloton"
 				.PostJsonAsync(pelotonSettings)
 				.ReceiveJson<SettingsPelotonGetResponse>();
 	}
 
-	public Task<SettingsGarminGetResponse> SettingsGarminPostAsync(Common.Garmin garminSettings)
+	public Task<SettingsGarminGetResponse> SettingsGarminPostAsync(SettingsGarminPostRequest garminSettings)
 	{
 		return $"{_apiUrl}/api/settings/garmin"
 				.PostJsonAsync(garminSettings)
@@ -97,5 +103,29 @@ public class ApiClient : IApiClient
 		return $"{_apiUrl}/api/peloton/workouts/all"
 				.SetQueryParams(request)
 				.GetJsonAsync<PelotonWorkoutsGetAllResponse>();
+	}
+
+	public Task<ProgressGetResponse> GetAnnualProgressAsync()
+	{
+		return $"{_apiUrl}/api/pelotonannualchallenge/progress"
+				.GetJsonAsync<ProgressGetResponse>();
+	}
+
+	public Task<GarminAuthenticationGetResponse> GetGarminAuthenticationAsync()
+	{
+		return $"{_apiUrl}/api/garminauthentication"
+				.GetJsonAsync<GarminAuthenticationGetResponse>();
+	}
+
+	public Task<IFlurlResponse> SignInToGarminAsync()
+	{
+		return $"{_apiUrl}/api/garminauthentication/signin"
+			.PostAsync();
+	}
+
+	public Task SendGarminMfaTokenAsync(GarminAuthenticationMfaTokenPostRequest request)
+	{
+		return $"{_apiUrl}/api/garminauthentication/mfaToken"
+			.PostJsonAsync(request);
 	}
 }
