@@ -3,18 +3,11 @@
 
 ## Features
 
-- [#432] General Support for Garmin accounts protected by Two Step Verification
-	- WebUI - New setting added to enable 2FA
-	- Console (manual) - New setting added to enable 2FA
-	- Headless (automatic sync) - Does not support 2FA
-	- GitHub Action - Does not support 2FA
-- [#438] On startup log path to config file being used
+- [#502] Partial support for Peloton Gym
+- [#497] Add minimal support for Rowing Bootcamp
+- More exercise mappings
+	- [#495] Open Lateral Raise, Pike Push Up, Dolphin
+	- [#499] Forearm Side Plank Rotation, Straight Leg Bicycle
 
 ## Fixes
-
-- [#430] Fixed where error thrown for classes with `*` in the title 
-
-## Housekeeping
-
-- [#434] Dependency Bumps
-- [#435] More Dependency Bumps
+- `All converters were skipped.` - confusing log message when no workouts needed to be synced
