@@ -110,7 +110,8 @@ This section provides settings related to conversions and what formats should be
     },
     "Strength": {
       "DefaultSecondsPerRep": 3
-    }
+    },
+    "WorkoutTitlePrefix": "Peloton - "
   }
 ```
 
@@ -131,6 +132,7 @@ This section provides settings related to conversions and what formats should be
 | Rowing.PreferredLapType | no | `Default` | `Conversion Tab` | The preferred [lap type to use](#lap-types). |
 | Strength | no | `null` | `Conversion Tab` | Configuration specific to Strength workouts. |
 | Strength.DefaultSecondsPerRep | no | `3` | `Conversion Tab` | For exercises that are done for time instead of reps, P2G can estimate how many reps you completed using this value. Ex. If `DefaultSecondsPerRep=3` and you do Curls for 15s, P2G will estimate you completed 5 reps. |
+| WorkoutTitlePrefix | no | `null` | `Conversion Tab` | A Title Prefix to apply to all workouts.  By default applies no prefix. |
 
 ### Understanding Custom Zones
 
@@ -191,7 +193,7 @@ This section provides settings related to fetching workouts from Peloton.
 | Field      | Required | Default | UI Setting Location | Description |
 |:-----------|:---------|:--------|:--------------------|:------------|
 | Email | **yes** | `null` | `Peloton Tab` | Your Peloton email used to sign in |
-| Password | **yes** | `null` | `Peloton Tab` | Your Peloton password used to sign in |
+| Password | **yes** | `null` | `Peloton Tab` | Your Peloton password used to sign in. **Note: Does not support `\` character in password** |
 | NumWorkoutsToDownload | no | 5 | `Peloton Tab` | The default number of workouts to download. See [choosing number of workouts to download](#choosing-number-of-workouts-to-download).  Set this to `0` if you would like P2G to prompt you each time for a number to download. |
 | ExcludeWorkoutTypes | no | none | `Peloton Tab` | A comma separated list of workout types that you do not want P2G to download/convert/upload. See [example use cases](#exclude-workout-types) below. |
 
@@ -210,6 +212,7 @@ The available values are:
 
 ```json
   Cycling
+  Outdoor Cycling
   BikeBootcamp
   TreadmillRunning
   OutdoorRunning
@@ -248,7 +251,7 @@ This section provides settings related to uploading workouts to Garmin.
 | Field      | Required | Default | UI Setting Location | Description |
 |:-----------|:---------|:--------|:--------------------|:------------|
 | Email | **yes - if Upload=true** | `null` | `Garmin Tab` | Your Garmin email used to sign in |
-| Password | **yes - if Upload=true** | `null` | `Garmin Tab` | Your Garmin password used to sign in |
+| Password | **yes - if Upload=true** | `null` | `Garmin Tab` | Your Garmin password used to sign in. **Note: Does not support `\` character in password** |
 | TwoStepVerificationEnabled | no | `false` | `Garmin Tab` | Whether or not your Garmin account is protected by Two Step Verification |
 | Upload | no | `false` | `Garmin Tab` |  `true` indicates you wish downloaded workouts to be automatically uploaded to Garmin for you. |
 | FormatToUpload | no | `fit` | `Garmin Tab > Advanced` | Valid values are `fit` or `tcx`. Ensure the format you specify here is also enabled in your [Format config](#format-config) |
