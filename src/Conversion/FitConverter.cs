@@ -65,7 +65,7 @@ namespace Conversion
 			var title = WorkoutHelper.GetTitle(workout, settings.Format);
 			var sport = GetGarminSport(workout);
 			var subSport = GetGarminSubSport(workout);
-			var deviceInfo = await GetDeviceInfoAsync(workout.Fitness_Discipline, settings);
+			var deviceInfo = await GetDeviceInfoAsync(workout);
 
 			if (sport == Sport.Invalid)
 			{
@@ -129,7 +129,7 @@ namespace Conversion
 			AddMetrics(messages, workoutSamples, sport, startTime);
 
 			var workoutMesg = new WorkoutMesg();
-			workoutMesg.SetWktName(title.Replace(WorkoutHelper.SpaceSeparator, ' '));
+			workoutMesg.SetWktName(title.Replace(WorkoutHelper.SpaceSeparator, WorkoutHelper.Space));
 			workoutMesg.SetCapabilities(32);
 			workoutMesg.SetSport(sport);
 			workoutMesg.SetSubSport(subSport);
